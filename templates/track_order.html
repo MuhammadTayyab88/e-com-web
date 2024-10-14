@@ -1,0 +1,151 @@
+{%load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Track Your Order</title>
+    <style>
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+    color: #333;
+}
+
+.container {
+    max-width: 600px;
+    margin: 50px auto;
+    padding: 20px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+h1 {
+    color: #333;
+    margin-bottom: 20px;
+}
+
+p {
+    color: #555;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: #555;
+}
+
+input[type="text"] {
+    width: calc(100% - 22px);
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    background-color: #007bff;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+#order-status {
+    margin-top: 30px;
+    padding: 20px;
+    background-color: #e9ecef;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+}
+
+.hidden {
+    display: none;
+}
+
+#status-message {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+}
+
+.alert-danger {
+    color: #6c757d; /* Dark gray text for better readability */
+    background-color: #f8d7da; /* Soft pink background */
+    border-color: #f5c6cb; /* Slightly darker pink for border */
+    padding: 15px;
+    border-radius: 4px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    margin-top: 20px;
+}
+
+.alert-danger::before {
+    content: "⚠️ "; /* Optional: Adds an icon before the message */
+    font-size: 18px;
+}
+
+.alert-danger p {
+    margin: 0;
+    font-weight: normal; /* Normal weight for text */
+}
+
+.alert-danger a {
+    color: #6c757d; /* Match link color with text color */
+    text-decoration: underline;
+}
+
+.alert-danger a:hover {
+    text-decoration: none; /* Remove underline on hover */
+}
+</style>
+</head>
+<body>
+    {%include "header.html"%}
+    <div class="container">
+        <h1>Track Your Order</h1>
+        <p>Enter your product ID to track your order status.</p>
+        <form method="POST" action="{% url 'track_order' %}">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="tracking-number">Tracking Number:</label>
+                <input type="text" id="tracking-number" name="tracking-number" required>
+            </div>
+            <button type="submit">Track Order</button>
+        </form>
+        
+        {% if order_status %}
+            <div id="order-status">
+                <h2>Order Status</h2>
+                <p>Your order is currently <strong>{{ order_status.status }}</strong>.</p>
+                <p>Tracking Number: <strong>{{ order_status.tracking_number }}</strong></p>
+                <p>Order Date: <strong>{{ order_status.order_date }}</strong></p>
+                {% if order_status.tracking_url %}
+                    <p>Track your order <a href="{{ order_status.tracking_url }}" target="_blank">here</a>.</p>
+                {% endif %}
+            </div>
+        {% elif error_message %}
+            <div class="alert-danger">
+                {{ error_message }}
+            </div>
+        {% endif %}
+    </div>
+    {%include "footer.html"%}
+</body>
+</html>

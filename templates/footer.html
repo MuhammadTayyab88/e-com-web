@@ -1,0 +1,192 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Footer</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        /* Footer Styles */
+        .site-footer1 {
+            background: linear-gradient(135deg, black 8%, orange 92%);
+            color: #fff;
+            padding: 50px 0;
+            width: 100%;
+            position: relative;
+            left: 0;
+            right: 0;
+            margin-top: auto;
+            clear: both;
+        }
+
+        .site-footer1 .container2 {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            padding: 0 20px;
+        }
+
+        .site-footer1 .footer-col3 {
+            flex: 1;
+            margin: 10px 15px;
+            min-width: 200px;
+        }
+
+        .site-footer1 .footer-col3 h4 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            position: relative;
+            padding-bottom: 10px;
+            color: #fff;
+            text-transform: uppercase;
+            border-bottom: 2px solid #38ef7d;
+        }
+
+        .site-footer1 .footer-col3 ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .site-footer1 .footer-col3 ul li {
+            margin-bottom: 10px;
+        }
+
+        .site-footer1 .footer-col3 ul li a {
+            text-decoration: none;
+            color: #b3b3b3;
+            transition: color 0.3s ease-in-out, transform 0.3s ease-in-out;
+        }
+
+        .site-footer1 .footer-col3 ul li a:hover {
+            color: #38ef7d;
+            transform: translateX(10px);
+        }
+
+        .site-footer1 .social-links5 a {
+            display: inline-block;
+            margin-right: 10px;
+            background: #333;
+            color: #fff;
+            width: 40px;
+            height: 40px;
+            line-height: 40px;
+            text-align: center;
+            border-radius: 50%;
+            transition: background 0.3s ease-in-out, transform 0.3s ease-in-out;
+        }
+
+        .site-footer1 .social-links5 a:hover {
+            background: #38ef7d;
+            transform: scale(1.2);
+        }
+
+        .site-footer1 .social-links5 a i {
+            font-size: 20px;
+        }
+
+        /* Responsive */
+        @media (max-width: 767px) {
+            .site-footer1 .container2 {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .site-footer1 .footer-col3 {
+                margin: 20px 0;
+            }
+        }
+
+        /* Additional Styling */
+        .site-footer1 .footer-col3 h4::after {
+            content: '';
+            display: block;
+            width: 50px;
+            height: 3px;
+            background-color: #38ef7d;
+            margin-top: 5px;
+        }
+
+        .site-footer1 .footer-col3 ul li a {
+            display: inline-block;
+            position: relative;
+            padding-left: 10px;
+        }
+
+        .site-footer1 .footer-col3 ul li a::before {
+            content: '•';
+            position: absolute;
+            left: 0;
+            color: #38ef7d;
+            font-size: 18px;
+        }
+
+        /* Enhanced Visuals */
+        .site-footer1 .footer-col3 h4 {
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .site-footer1 .footer-col3 ul li a {
+            font-weight: 300;
+            letter-spacing: 0.5px;
+        }
+
+        .site-footer1 .social-links5 a {
+            background: linear-gradient(135deg, #ff7e5f 0%, #feb47b 100%);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .site-footer1 .social-links5 a:hover {
+            background: linear-gradient(135deg, #43cea2 0%, #185a9d 100%);
+        }
+
+        .site-footer1 .footer-col3 ul li a:hover::before {
+            color: #38ef7d;
+        }
+    </style>
+</head>
+<body>
+    <div class="site-footer1">
+        <div class="container2">
+            <div class="footer-col3">
+                <h4>Company</h4>
+                <ul id="un-order">
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Our Services</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Affiliate Program</a></li>
+                </ul>
+            </div>
+            <div class="footer-col3">
+                <h4>Get Help</h4>
+                <ul id="un-order">
+                    <li><a href="#">FAQ</a></li>
+                    <li><a href="#">Shipping</a></li>
+                    <li><a href="#">Returns</a></li>
+                    <li><a href="#">Order Status</a></li>
+                    <li><a href="#">Payment Options</a></li>
+                </ul>
+            </div>
+            <div class="footer-col3">
+                <h4>Online Shop</h4>
+                <ul id="un-order">
+                    <li><a href="#">Watch</a></li>
+                    <li><a href="#">Bag</a></li>
+                    <li><a href="#">Shoes</a></li>
+                    <li><a href="#">Dress</a></li>
+                </ul>
+            </div>
+            <div class="footer-col3">
+                <h4>Follow Us</h4>
+                <div class="social-links5">
+                    <a href=""><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="https://www.linkedin.com/in/muhammad-tayyab-king/"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
