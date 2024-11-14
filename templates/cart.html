@@ -72,20 +72,19 @@
 .fade.show {
     transition: opacity 0.15s linear;
 }
+.quantity-control{
+    display: flex;
+    flex-flow: row;
+    gap:8px;
+    align-items: center;
+    border:none;
 
+
+}
     </style>
 </head>
 <body>
     {% include 'header.html' %}
-    {% if messages %}
-        <div id="message-container">
-            {% for message in messages %}
-                <div class="alert alert-success" id="message-{{ forloop.counter }}" role="alert">
-                    {{ message }}
-                </div>
-            {% endfor %}
-        </div>
-    {% endif %}
 
     <div class="container">
         <h1>Your Shopping Cart</h1>
@@ -96,12 +95,10 @@
                         <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="product-image">
                         <div class="product-details">
                             <h2>{{ item.product.name }}</h2>
-                            <p>Category: {{ item.product.category }}</p>
                             <p>Size: {{ item.size }}</p>
                             <p>Quantity: {{ item.quantity }}</p>
                             <p>{{ item.product.price }}</p>
                         </div>
-                        
                         <div class="product-total">
                             <p>Total: {{ item.quantity|multiply:item.product.price }}</p>
                             <form method="POST" action="{% url 'remove_from_cart' item.id %}">
@@ -123,7 +120,6 @@
             <p>Your cart is empty.</p>
         {% endif %}
     </div>
-    
 
     {% include 'footer.html' %}
 
@@ -131,19 +127,95 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="{% static 'js/script.js' %}"></script>
-    <!-- Add to the cart.html page, near the end of the file -->
-<!-- Add to the cart.html page, near the end of the file -->
+
 <script>
     // Automatically close alerts after 3 seconds
-    setTimeout(() => {
-        const alerts = document.querySelectorAll('.alert');
-        alerts.forEach(alert => {
-            alert.classList.remove('show');
-            alert.classList.add('fade');
+   
+   document.addEventListener("DOMContentLoaded", function() {
+    // Function to update the total price for a single item
+    function updateItemTotalPrice(itemId, quantity, pricePerItem) {
+        const totalPrice = quantity * pricePerItem;
+        document.getElementById(`total-price-${itemId}`).innerText = totalPrice.toFixed(2);
+    }
+
+    // Function to calculate the cart subtotal
+    function updateCartSubtotal() {
+        let subtotal = 0;
+        document.querySelectorAll(".total-price").forEach(function(totalPriceElement) {
+            subtotal += parseFloat(totalPriceElement.innerText) || 0;
         });
-    }, 3000); // 3 seconds
+        document.getElementById("cart-subtotal").innerText = subtotal.toFixed(2);
+
+        // Assuming delivery fee is a constant value from Django
+        const deliveryFee = parseFloat("{{ delivery_fee|floatformat:2 }}");
+        document.getElementById("cart-total").innerText = (subtotal + deliveryFee).toFixed(2);
+    }
+
+    // Function to handle quantity changes for each item
+    function changeQuantity(itemId, isIncrease) {
+        const quantityElement = document.getElementById(`quantity-${itemId}`);
+        let quantity = parseInt(quantityElement.innerText) || 0;
+
+        if (isIncrease) {
+            quantity++;
+        } else if (quantity > 1) {
+            quantity--;
+        } else {
+            return; // Prevent quantity from going below 1
+        }
+
+        // Update the quantity in the UI
+        quantityElement.innerText = quantity;
+
+        // Get the price per item from the Django template and parse it as a number
+        const pricePerItem = parseFloat(document.querySelector(`.cart-item[data-item-id="${itemId}"] .product-details p.price-per-item`).innerText.split(": ")[1]) || 0;
+
+        // Update the total price for this item
+        updateItemTotalPrice(itemId, quantity, pricePerItem);
+
+        // Update the cart subtotal
+        updateCartSubtotal();
+    }
+
+    // Function to handle adding items to the cart
+    function addToCart(itemId, pricePerItem) {
+        // Check if item already exists in the cart
+        const quantityElement = document.getElementById(`quantity-${itemId}`);
+        
+        if (quantityElement) {
+            // If the item exists, increment the quantity
+            changeQuantity(itemId, true);
+        } else {
+            // If the item doesn't exist, add it to the cart (pseudo-code)
+            // In a real application, you would update the DOM to add the new item
+
+            // Example: You could create a new HTML element dynamically for the new item
+            // and append it to the cart container
+            console.log("Adding a new item to the cart");
+        }
+    }
+
+    // Attach event listeners to each increase and decrease button
+    document.querySelectorAll(".quantity-button").forEach(function(button) {
+        button.addEventListener("click", function() {
+            const itemId = this.getAttribute("data-item-id");
+            const isIncrease = this.classList.contains("increase");
+            changeQuantity(itemId, isIncrease);
+        });
+    });
+
+    // Event listener for "Add to Cart" button (example button)
+    document.querySelectorAll(".add-to-cart-button").forEach(function(button) {
+        button.addEventListener("click", function() {
+            const itemId = this.getAttribute("data-item-id");
+            const pricePerItem = parseFloat(this.getAttribute("data-price"));
+            addToCart(itemId, pricePerItem);
+        });
+    });
+});
+
+
+
 </script>
-
-
 </body>
 </html>

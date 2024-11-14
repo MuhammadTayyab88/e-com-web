@@ -1,3 +1,4 @@
+/* Container for each product card */
 .product-category {
     margin-top: 30px;
     padding: 20px;
@@ -18,6 +19,7 @@
     justify-content: space-between;
 }
 
+/* Show More button at the end of the product list */
 .show-more {
     display: inline-block;
     margin-top: 15px;
@@ -32,46 +34,128 @@
     text-decoration: underline;
 }
 
-/* Adjustments for the product cards */
+/*  product cards */
 .product-card {
-    
-    flex: 1 1 calc(33.33% - 20px); /* 3 cards per row */
+    flex: 1 1 calc(33.33% - 20px);
     border: 1px solid #ccc;
     border-radius: 5px;
     padding: 15px;
     box-sizing: border-box;
-    transition: transform 0.2s ease-in-out;
+    transition: transform 0.3s ease-in-out;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    column-gap: normal;
+    max-width: 300px;
+    min-height: 548px;
+    background: #fff; border: 1px solid #ddd; border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); padding: 15px;
+    
+      
 }
 
+/* Ensure consistent image size */
 .product-card img {
     width: 100%;
-    height: 250px !important;
+    max-height: 200px; /* Set max height for images */
+    object-fit: cover; /* Maintain aspect ratio */
     border-radius: 5px;
-    margin-bottom: 10px;
+    margin-bottom: auto;
 }
 
+/* Product title styling */
 .product-card .product-title {
     font-size: 18px;
     font-weight: bold;
-    margin-bottom: 10px;
+    color: #333;
+    margin: 10px 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* Limits to 2 lines */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-.product-card .product-price {
+/* Product description with limited lines */
+.product-description {
+    display: -webkit-box;
+    -webkit-line-clamp: 3; /* Change to the number of lines you want, e.g., 2 or 3 */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.5em;
+    max-height: calc(1.5em * 3); /* Multiply by the line count to control height */
+    margin-bottom: 5px;
+    color: #555;
+}
+
+
+/* View More button styling */
+.view-more-btn {
+    background: none;
+    border: none;
+    color: #007bff;
+    cursor: pointer;
+    text-decoration: underline;
+    padding: 0;
+    font-size: 0.9em;
+    margin-top: 5px;
+}
+
+/* Product price styling */
+.product-price {
     font-size: 16px;
     color: #007bff;
-    margin-bottom: 10px;
+    font-weight: bold;
+    margin-top: auto; /* Push price and button to the bottom of the card */
+    margin-bottom: 10px; /* Space between price and quantity */
 }
 
+/* Quantity and Add to Cart button fixed at the bottom */
+.add-to-cart-container {
+    display: flex;
+    flex-direction: column;
+    margin-top: auto; /* Push container to bottom */
+    gap: 10px; /* Space between Quantity input and button */
+}
+
+/* Quantity field styling */
+.quantity-field1 {
+    width: 100%;
+}
+
+/* Add to Cart button styling */
 .product-card .add-to-cart {
     display: inline-block;
-    background-color: #007bff;
+    background-color: #007bff; color: white; padding: 10px 20px;
+    border: none; border-radius: 5px; cursor: pointer; width: 100%;
     color: white;
     padding: 8px 16px;
-    border-radius: 5px;
+    text-align: center;
     text-decoration: none;
     transition: background-color 0.3s ease;
+    width: 100%;
 }
 
 .product-card .add-to-cart:hover {
     background-color: #0056b3;
+}
+
+/* Maintain outline focus styling */
+.view-more-btn:focus, .add-to-cart:focus {
+    outline: none;
+}
+
+/* View More button hover effect */
+.view-more-btn:hover {
+    color: #0056b3;
+    text-decoration: none;
+}
+.add-to-cart-form {
+    margin-top: auto; /* Pushes the form to the bottom */
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    bottom: 15px;
+    justify-items: center;
 }

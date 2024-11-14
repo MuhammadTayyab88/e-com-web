@@ -9,20 +9,12 @@ from django.utils.safestring import mark_safe
 
 
 class CartItemForm(forms.ModelForm):
-    SIZE_CHOICES = [
-        ('S', 'Small'),
-        ('M', 'Medium'),
-        ('L', 'Large'),
-        ('XL', 'Extra Large'),
-        ('XXL', 'Double Extra Large'),
-    ]
-    
-    size = forms.ChoiceField(choices=SIZE_CHOICES, widget=forms.Select(attrs={'class': 'form-control'}))
+
     quantity = forms.IntegerField(min_value=1, initial=1, widget=forms.NumberInput(attrs={'class': 'form-control', 'min': '1', 'value': '1'}))
 
     class Meta:
         model = CartItem
-        fields = ['product', 'size', 'quantity']
+        fields = ['product', 'quantity']
         widgets = {
             'product': forms.HiddenInput(),
         }

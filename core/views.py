@@ -10,26 +10,31 @@ from django.conf import settings
 import stripe
 from django.contrib.auth.models import User
 import random
-import datetime
 from django.contrib.auth.hashers import make_password
 from django.contrib import messages
 from .models import TrackingOrder
 from django.contrib.auth.forms import UserCreationForm
-
+from django.views.decorators.http import require_POST
 from django.http import JsonResponse
+
+
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
 
+TWILIO_ACCOUNT_SID = settings.TWILIO_ACCOUNT_SID
+TWILIO_AUTH_TOKEN = settings.TWILIO_AUTH_TOKEN
 
-# Access the model using get_model in the function where needed
+# # # Initialize the Twilio client
+# client = Client(settings.TWILIO_ACCOUNT_SID, settings.TWILIO_AUTH_TOKEN)
+
 
 
 
 # views.py
 def home(request):
     homepage_images = HomePageImage.objects.all()
-    categories = ["clothes", "watches", "fashion", "electronics"]
+    categories = [ 'fashion', 'electronics','bages','jewellery']
     products_by_category = {}
 
     # Loop through each category to get exactly three random products or all if fewer than three
@@ -47,44 +52,42 @@ def home(request):
     })
 
 
-
-#your view to handle the form submission and save the data to the database.
+@require_POST
+@login_required
 def add_to_cart(request):
-    if request.method == 'POST':
-        product_id = request.POST.get('product_id')
-        size = request.POST.get('size')  # Size field (for Clothes category)
-        quantity = request.POST.get('quantity')
+    product_id = request.POST.get('product_id')
+    quantity = request.POST.get('quantity', 1)
 
-        # Check if the product exists
-        product = get_object_or_404(Product, id=product_id)
+    # Check if the product exists
+    product = get_object_or_404(Product, id=product_id)
 
-        # Validate quantity
-        if not quantity or int(quantity) <= 0:
+    # Validate quantity
+    try:
+        quantity = int(quantity)
+        if quantity <= 0:
             messages.error(request, 'Please enter a valid quantity.')
             return redirect(request.META.get('HTTP_REFERER', 'home'))
+    except ValueError:
+        messages.error(request, 'Please enter a valid quantity.')
+        return redirect(request.META.get('HTTP_REFERER', 'home'))
 
-        # Only require size selection if the product category is "clothes"
-        if product.category == "clothes" and not size:
-            messages.error(request, 'Please select a size for this product.')
-            return redirect(request.META.get('HTTP_REFERER', 'home'))
+    # Get or create the cart item (exclude quantity from get_or_create)
+    cart_item, created = CartItem.objects.get_or_create(
+        user=request.user,
+        product=product,
+    )
 
-        # Create or update the cart item with or without size
-        cart_item, created = CartItem.objects.get_or_create(
-            user=request.user,
-            product=product,
-            size=size,
-            quantity= quantity
-        )
+    # If the cart item already exists, update the quantity
+    if not created:
+        cart_item.quantity += quantity  # Increment quantity
+    else:
+        cart_item.quantity = quantity  # Set quantity for new item
 
-        # If the cart item already exists, update the quantity
-        if not created:
-            cart_item.quantity += int(quantity)
-            cart_item.save()
+    # Save the cart item
+    cart_item.save()
 
-        messages.success(request, f"{product.name} has been added to your cart.")
-        return redirect('cart')  # Redirect to the cart page
-
-    return redirect('index')
+    messages.success(request, f"{product.name} has been added to your cart.")
+    return redirect('cart')
 
 def remove_from_cart(request, item_id):
     # Find the cart item based on the provided item_id and ensure it belongs to the logged-in user
@@ -192,14 +195,14 @@ def contact_view(request):
 
 
 def send_order_confirmation_sms(user_phone, order_id):
-    client = Client(settings.TWILIO_ACCOUNT_SID, settings.TWILIO_AUTH_TOKEN)
-    message = f'Thank you for your order! Your order has been placed.Thankyou for shopping.Your Order id is {order_id}.'
+    client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
+    message = f'Thank you for your order! Your order has been placed.Thankyou for shopping.Your Order id is TRCK{order_id}.'
     client.messages.create(
         body=message,
         from_=settings.TWILIO_PHONE_NUMBER,
         to=user_phone
     )
-
+    
 
 def checkout(request):
     cart_items = CartItem.objects.filter(user=request.user)
@@ -216,7 +219,6 @@ def checkout(request):
                 checkout_info = form.save(commit=False)
                 checkout_info.user = request.user
                 checkout_info.product = cart_item.product
-                checkout_info.size = cart_item.size
                 checkout_info.quantity = cart_item.quantity
                 checkout_info.save()
 
@@ -229,7 +231,7 @@ def checkout(request):
                                 'price_data': {
                                     'currency': 'usd',
                                     'product_data': {
-                                        'name': f"{checkout_info.product.name} ({checkout_info.size})",
+                                        'name': f"{checkout_info.product.name} ",
                                     },
                                     'unit_amount': int(checkout_info.product.price * 100),
                                 },
@@ -287,17 +289,12 @@ def track_order(request):
         'error_message': error_message
     })
 
-VALID_CATEGORIES = ['clothes', 'watches', 'fashion', 'electronics']
+VALID_CATEGORIES = [ 'fashion', 'electronics','bages','jewellery']
 
 
 def category_page(request, category_name):
     # Check if the request is POST for handling form submissions, like size validation
-    if request.method == 'POST':
-        size = request.POST.get('size')
-        # Check if the category is clothes and no size is selected
-        if category_name.lower() == "clothes" and not size:
-            messages.error(request, 'Please select a size for this product.')
-            return redirect(request.META.get('HTTP_REFERER', 'home'))
+        
 
     # Retrieve products based on category (this will run regardless of GET or POST)
     category_products = Product.objects.filter(category__iexact=category_name)
@@ -306,7 +303,8 @@ def category_page(request, category_name):
     return render(request, 'category_page.html', {
         'category_name': category_name.capitalize(),
         'category_products': category_products,
-        'is_clothes_category': category_name.lower() == 'clothes',
+        'is_bags_category': category_name.lower() == 'bags',
+        'is_Jewellery_category': category_name.lower() == 'jewellery',
         'is_fashion_category': category_name.lower() == 'fashion',
         'is_electronics_category': category_name.lower() == 'electronics',
     })
@@ -336,41 +334,12 @@ def reset_password(request, email):
             return redirect('reset_password', email=email)
     return render(request, 'reset_password.html', {'email': email})
 
-def send_otp(phone_number):
-    client = Client(settings.TWILIO_ACCOUNT_SID, settings.TWILIO_AUTH_TOKEN)
-    otp = str(random.randint(1000, 9999))  # Generate a 4-digit OTP
+# product detail
 
-    # Store OTP in database (overwrite if it exists)
-    PhoneOTP.objects.update_or_create(phone_number=phone_number, defaults={'otp': otp})
+def product_detail(request, product_id):
+    # Fetch product by ID
+    product = get_object_or_404(Product, id=product_id)
     
-    # Send the OTP using Twilio
-    message = client.messages.create(
-        body=f"Your OTP is {otp}",
-        from_=settings.TWILIO_PHONE_NUMBER,
-        to=phone_number
-    )
-    return otp
-
-# View to send OTP
-def send_otp_view(request):
-    phone_number = request.GET.get('phone')
-    if not phone_number:
-        return JsonResponse({'status': 'fail', 'message': 'Phone number is required'})
-
-    # Send the OTP
-    send_otp(phone_number)
-    return JsonResponse({'status': 'success', 'message': 'OTP sent successfully'})
-
-# View to verify OTP
-def verify_otp_view(request):
-    phone_number = request.GET.get('phone')
-    otp = request.GET.get('otp')
-    try:
-        otp_entry = PhoneOTP.objects.get(phone_number=phone_number, otp=otp)
-        # Optional: Check OTP expiry
-        if otp_entry.created_at < datetime.datetime.now() - datetime.timedelta(minutes=10):
-            return JsonResponse({'status': 'fail', 'message': 'OTP expired'})
-        
-        return JsonResponse({'status': 'success', 'message': 'OTP verified successfully'})
-    except PhoneOTP.DoesNotExist:
-        return JsonResponse({'status': 'fail', 'message': 'Invalid OTP'})
+    return render(request, 'product_detail.html', {
+        'product': product,
+    })

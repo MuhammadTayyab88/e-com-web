@@ -1,6 +1,5 @@
 from django.urls import path
 from .views import home, add_to_cart, cart, register, login_view, contact_view, logout_view, track_order
-
 from . import views
 from django.contrib.auth import views as auth_views
 
@@ -12,8 +11,6 @@ urlpatterns = [
     path('checkout/', views.checkout, name='checkout'),
     path('checkout/success/', views.checkout_success, name='checkout_success'),
     path('register/', register, name='register'),
-    path('send-otp/', views.send_otp_view, name='send_otp'),
-    path('verify-otp/', views.verify_otp_view, name='verify_otp'),
     path('login/', login_view, name='login'),
     path('logout/', logout_view, name='logout'),
     path('contact/', contact_view, name='contact_view'),
@@ -28,7 +25,9 @@ urlpatterns = [
     path('reset/done/', auth_views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),
     path('reset_password/<str:email>/', views.reset_password, name='reset_password'),
     path('forget_password/', views.forget_password, name='forget_password'),
-   
+    path('product/<int:product_id>/', views.product_detail, name='product_detail'),
+    path('category/<str:category_name>/', views.category_page, name='category_page'),
+    
   
 
 

@@ -10,7 +10,6 @@
     <style>
     .register-form {
         width: 400px;
-        height: 500px;
         margin: 0 auto;
         padding: 40px;
         border: 1px solid #ddd;
@@ -51,6 +50,11 @@
       
       .register-form button:hover {
         background-color: #45a049;
+      
+      }
+      .nav-link{
+      margin-top: 10px;
+      border: 2px red;
       }
       
     </style>
@@ -66,14 +70,14 @@
           <label for="email">Email:</label>
           <input type="email" id="email" name="email" required>
       
-          <label for="phone">Phone Number:</label>
+          <!-- <label for="phone">Phone Number:</label>
           <input type="text" id="phone" name="phone" required>
           <button type="button" onclick="sendOTP()">Send OTP</button>
       
           <div id="otpSection" style="display:none;">
             <label for="otp">Enter OTP:</label>
             <input type="text" id="otp" name="otp" required>
-          </div>
+          </div> -->
       
           <label for="password">Password:</label>
           <input type="password" id="password" name="password" required>
@@ -82,9 +86,11 @@
           <input type="password" id="passwordConfirmation" name="passwordConfirmation" required>
       
           <button type="submit">Register</button>
+          <br>
+          <a class="nav-link"  href="{% url 'login' %}">Login</a>
         </form>
       </div>
-      <script>
+      <!-- <script>
       function sendOTP() {
         const phone = document.getElementById("phone").value;
         fetch(`/send-otp/?phone=${phone}`)
@@ -108,6 +114,6 @@
             })
             .catch(error => console.log(error));
     }
-    </script>
+    </script> -->
 </body>
 </html>

@@ -11,27 +11,20 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 import os
 from pathlib import Path
-
-from dotenv import load_dotenv
-
-env_path = r'C:\Users\Muhammad Tayyab\Downloads\New folder\.env'
-
-
-load_dotenv()
-
-
+from decouple import config
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY= os.getenv('SECRET_KEY')
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
+SECRET_KEY = config('SECRET_KEY')
+EMAIL_HOST_USER=config('EMAIL_HOST_USER', default='')
+EMAIL_HOST_PASSWORD=config('EMAIL_HOST_PASSWORD', default='')
+TWILIO_ACCOUNT_SID=config('TWILIO_ACCOUNT_SID', default='')
+TWILIO_AUTH_TOKEN =config('TWILIO_AUTH_TOKEN', default='')
+TWILIO_PHONE_NUMBER =config('TWILIO_PHONE_NUMBER',default='')
+STRIPE_SECRET_KEY=config('STRIPE_SECRET_KEY', default='')
+STRIPE_PUBLISHABLE_KEY =config('STRIPE_PUBLISHABLE_KEY', default='')
+DEBUG = config('DEBUG', default=False)
 ALLOWED_HOSTS = []
 
 
@@ -147,18 +140,17 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'asimalipeerzada@gmail.com'
-EMAIL_HOST_PASSWORD = 'ugus ubor bcka njej'
+# EMAIL_HOST_USER = 'asimalipeerzada@gmail.com'
+# EMAIL_HOST_PASSWORD = 'ugus ubor bcka njej'
 
-TWILIO_ACCOUNT_SID = 'ACc7808afabeb354fa8d3d7d9b8dc92fde'
-TWILIO_AUTH_TOKEN = '8d99e44a8e43b2b5e4d9140976e9b60d'
-TWILIO_PHONE_NUMBER = '+18154271961'
-
-
+# TWILIO_ACCOUNT_SID = 'ACc7808afabeb354fa8d3d7d9b8dc92fde'
+# TWILIO_AUTH_TOKEN = '366c663881869d92990470a4ae0636a0'
+# TWILIO_PHONE_NUMBER = '+18154271961'
 
 
-STRIPE_SECRET_KEY = 'sk_test_51PfdygBTaJCXx3MmjQAbygLN8zQOFcva5nP3ovjDvkIIgLZiBWBYfY58DpNVlqshTjnqqZgoI3ADQ4LcQQqhG2cQ00nX82CRVO'
-STRIPE_PUBLISHABLE_KEY = 'pk_test_51PfdygBTaJCXx3MmJryxIB37sEPZWVgzaYHJOvDmE0akqxiTHDPHWuj4JqPRBixVhUIph5UP7hwRr8we4XdCI5IF00cYbJIbfq'
+
+# STRIPE_SECRET_KEY = 'sk_test_51PfdygBTaJCXx3MmjQAbygLN8zQOFcva5nP3ovjDvkIIgLZiBWBYfY58DpNVlqshTjnqqZgoI3ADQ4LcQQqhG2cQ00nX82CRVO'
+# STRIPE_PUBLISHABLE_KEY = 'pk_test_51PfdygBTaJCXx3MmJryxIB37sEPZWVgzaYHJOvDmE0akqxiTHDPHWuj4JqPRBixVhUIph5UP7hwRr8we4XdCI5IF00cYbJIbfq'
 
 
 
