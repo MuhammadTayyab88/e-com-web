@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import HomePageImage, Product, CartItem,TrackingOrder,PhoneOTP
+from .models import HomePageImage, Product, CartItem,TrackingOrder
 from django.contrib.auth.decorators import login_required
 from .forms import CartItemForm, CheckoutForm, RegisterForm, LoginForm, ContactForm
 from django.contrib import messages
@@ -13,11 +13,8 @@ import random
 from django.contrib.auth.hashers import make_password
 from django.contrib import messages
 from .models import TrackingOrder
-from django.contrib.auth.forms import UserCreationForm
 from django.views.decorators.http import require_POST
 from django.http import JsonResponse
-
-
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
@@ -25,43 +22,25 @@ stripe.api_key = settings.STRIPE_SECRET_KEY
 TWILIO_ACCOUNT_SID = settings.TWILIO_ACCOUNT_SID
 TWILIO_AUTH_TOKEN = settings.TWILIO_AUTH_TOKEN
 
-# # # Initialize the Twilio client
-# client = Client(settings.TWILIO_ACCOUNT_SID, settings.TWILIO_AUTH_TOKEN)
-
-
-
-
-# views.py
 def home(request):
     homepage_images = HomePageImage.objects.all()
-    categories = [ 'fashion', 'electronics','bages','jewellery']
+    categories = [ 'fashion', 'electronics','bags','jewellery']
     products_by_category = {}
-
-    # Loop through each category to get exactly three random products or all if fewer than three
     for category in categories:
         products = list(Product.objects.filter(category__iexact=category))
-
-        # Select three random products or all products if fewer than three are available
         if len(products) > 3:
             products = random.sample(products, 3)
         products_by_category[category] = products
-
     return render(request, 'index.html', {
         'homepage_images': homepage_images,
         'products_by_category': products_by_category,
     })
-
-
 @require_POST
 @login_required
 def add_to_cart(request):
     product_id = request.POST.get('product_id')
     quantity = request.POST.get('quantity', 1)
-
-    # Check if the product exists
     product = get_object_or_404(Product, id=product_id)
-
-    # Validate quantity
     try:
         quantity = int(quantity)
         if quantity <= 0:
@@ -70,79 +49,50 @@ def add_to_cart(request):
     except ValueError:
         messages.error(request, 'Please enter a valid quantity.')
         return redirect(request.META.get('HTTP_REFERER', 'home'))
-
-    # Get or create the cart item (exclude quantity from get_or_create)
     cart_item, created = CartItem.objects.get_or_create(
         user=request.user,
         product=product,
     )
-
-    # If the cart item already exists, update the quantity
     if not created:
-        cart_item.quantity += quantity  # Increment quantity
+        cart_item.quantity += quantity
     else:
-        cart_item.quantity = quantity  # Set quantity for new item
-
-    # Save the cart item
+        cart_item.quantity = quantity
     cart_item.save()
-
     messages.success(request, f"{product.name} has been added to your cart.")
     return redirect('cart')
 
 def remove_from_cart(request, item_id):
-    # Find the cart item based on the provided item_id and ensure it belongs to the logged-in user
     cart_item = get_object_or_404(CartItem, id=item_id, user=request.user)
-
-    # Delete the cart item
     cart_item.delete()
-
-    # Display a success message
     messages.success(request, "Item has been removed from your cart.")
-
-    # Redirect back to the cart page
     return redirect('cart')
-
 @login_required
 def cart(request):
     cart_items = CartItem.objects.filter(user=request.user)
     cart_subtotal = sum(item.product.price * item.quantity for item in cart_items)
     delivery_fee = 150
     cart_total = cart_subtotal + delivery_fee
-    
     return render(request, 'cart.html', {
         'cart_items': cart_items,
         'cart_subtotal': cart_subtotal,
         'delivery_fee': delivery_fee,
         'cart_total': cart_total,
     })
-    
+   
 def checkout_success(request):
     return render(request,'checkout_success.html')
 
-
-
 def register(request):
     if request.method == 'POST':
-        phone_number = request.POST['phone']
-        otp = request.POST['otp']
-
-        # Verify OTP
-        try:
-            otp_entry = PhoneOTP.objects.get(phone_number=phone_number, otp=otp)
-        except PhoneOTP.DoesNotExist:
-            return JsonResponse({'status': 'fail', 'message': 'OTP verification failed'})
-
-        form = UserCreationForm(request.POST)
+        form = RegisterForm(request.POST)
         if form.is_valid():
-            user = form.save()
-            login(request, user)
-            # Remove OTP entry after successful registration
-            otp_entry.delete()
-            return JsonResponse({'status': 'success', 'message': 'Registration successful'})
-
+            form.save()
+            messages.success(request, 'Account created successfully. You can now log in.')
+            return redirect('login')
+        else:
+            messages.error(request, 'Please correct the error below.')
     else:
-        form = UserCreationForm()
-
+        form = RegisterForm()
     return render(request, 'register.html', {'form': form})
 
 def login_view(request):
@@ -171,9 +121,6 @@ def logout_view(request):
     messages.success(request, 'You have successfully logged out.')
     return redirect('/')
 
-
-
-
 def contact_view(request):
     if request.method == 'POST':
         form = ContactForm(request.POST)
@@ -185,7 +132,7 @@ def contact_view(request):
                 f'Message from {name}',
                 message,
                 email,
-                ['Tayyibmuhammad1414@gmail.com'],  # Replace with your admin email
+                ['iqcollectionsstore@gmail.com'],
                 fail_silently=False,
             )
             return redirect('home')
@@ -203,7 +150,6 @@ def send_order_confirmation_sms(user_phone, order_id):
         to=user_phone
     )
     
-
 def checkout(request):
     cart_items = CartItem.objects.filter(user=request.user)
     cart_subtotal = sum(item.product.price * item.quantity for item in cart_items)
@@ -248,7 +194,7 @@ def checkout(request):
                 else:
                     send_order_confirmation_sms(checkout_info.contact_number, checkout_info.id)
 
-            cart_items.delete()  # Clear all items from cart after processing
+            cart_items.delete()
 
             messages.success(request, 'Your order has been placed successfully!')
             return redirect('checkout_success')
@@ -289,17 +235,11 @@ def track_order(request):
         'error_message': error_message
     })
 
-VALID_CATEGORIES = [ 'fashion', 'electronics','bages','jewellery']
+VALID_CATEGORIES = [ 'fashion', 'electronics','bags','jewellery']
 
 
 def category_page(request, category_name):
-    # Check if the request is POST for handling form submissions, like size validation
-        
-
-    # Retrieve products based on category (this will run regardless of GET or POST)
     category_products = Product.objects.filter(category__iexact=category_name)
-    print(f"Category: {category_name}, Products: {category_products}")  # Debugging output
-    
     return render(request, 'category_page.html', {
         'category_name': category_name.capitalize(),
         'category_products': category_products,
@@ -334,10 +274,7 @@ def reset_password(request, email):
             return redirect('reset_password', email=email)
     return render(request, 'reset_password.html', {'email': email})
 
-# product detail
-
 def product_detail(request, product_id):
-    # Fetch product by ID
     product = get_object_or_404(Product, id=product_id)
     
     return render(request, 'product_detail.html', {
