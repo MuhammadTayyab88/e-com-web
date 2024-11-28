@@ -1,9 +1,9 @@
-name: Deployment on Production
+name: Deploy to EC2 on Push to Main
 
 on:
   push:
     branches:
-      - main 
+      - main # Trigger only on pushes to the main branch
 
 jobs:
   deploy:
@@ -11,12 +11,20 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3 
+        uses: actions/checkout@v3 # Check out the repository code
 
       - name: Set up SSH
-        uses: webfactory/ssh-agent@v0.5.3 
-        with:
-          ssh-private-key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
+        run: |
+          # Start the SSH agent
+          eval "$(ssh-agent -s)"
+
+          # Add the private key to the agent
+          echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" | ssh-add -
+
+          # Provide the passphrase
+          echo "$EC2_SSH_PASSPHRASE" | ssh-add - <<< $EC2_SSH_PASSPHRASE
+        env:
+          EC2_SSH_PASSPHRASE: ${{ secrets.EC2_SSH_PASSPHRASE }}
 
       - name: Copy project files to EC2
         run: |
@@ -24,19 +32,18 @@ jobs:
           sudo apt-get install -y rsync
 
           # Sync files from GitHub to EC2
-          rsync -avz --exclude '.git*' ./ ubuntu@3.126.55.131:/home/ubuntu/ecommerce/
+          rsync -avz --exclude '.git*' ./ ubuntu@${{ secrets.EC2_IP }}:/home/ubuntu/ecommerce/
         env:
-          YOUR_EC2_IP: ${{ secrets.EC2_IP }}
+          EC2_IP: ${{ secrets.EC2_IP }}
 
       - name: SSH into EC2 and restart Gunicorn
         run: |
           ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_IP }} << 'EOF'
             cd /home/ubuntu/ecommerce
-            git pull origin main  
-            source venv/bin/activate  
-            pip install -r requirements.txt  
-            sudo systemctl restart gunicorn 
+            git pull origin main 
+            source venv/bin/activate 
+            pip install -r requirements.txt 
+            sudo systemctl restart gunicorn  
           EOF
         env:
-          EC2_SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
-          YOUR_EC2_IP: ${{ secrets.EC2_IP }}
+          EC2_IP: ${{ secrets.EC2_IP }}
