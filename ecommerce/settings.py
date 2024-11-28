@@ -91,9 +91,14 @@ USE_I18N = True
 
 USE_TZ = True
 
-STATIC_URL = 'static/'
+
+STATIC_URL = "/static/"
+# Directory where collectstatic will place all static files for production
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+
+# Additional directories containing static files for development
 STATICFILES_DIRS = [
-    BASE_DIR / "static",
+    os.path.join(BASE_DIR, "static"),  # Your custom static files
 ]
 
 MEDIA_URL = '/media/'
