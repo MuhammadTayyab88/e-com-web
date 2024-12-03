@@ -7,75 +7,66 @@
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <title>Forgot Password</title>
     <style>
-        /* Style for the body to center the container */
-body {
-    font-family: 'Poppins', sans-serif;
-    background-color: #f0f2f5;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    margin: 0;
-}
-
-/* Style for the main container */
-.container {
-    background: #ffffff;
-    padding: 2rem;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    max-width: 400px;
-    width: 100%;
-}
-
-/* Center the header text */
-h2 {
-    text-align: center;
-    margin-bottom: 1.5rem;
-    font-size: 1.8rem;
-    color: #333;
-}
-
-/* Style for the form group */
-.form-group {
-    margin-bottom: 1.5rem;
-}
-
-/* Input field styling */
-.form-group input[type="email"] {
-    width: 100%;
-    padding: 0.75rem 1rem;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 1rem;
-    transition: border-color 0.3s ease;
-}
-
-/* Input field focus styling */
-.form-group input[type="email"]:focus {
-    border-color: #11998e;
-    outline: none;
-}
-
-/* Style for the button */
-.btn {
-    width: 100%;
-    padding: 0.75rem 1rem;
-    border: none;
-    border-radius: 5px;
-    font-size: 1rem;
-    background: linear-gradient(to right, #11998e, #38ef7d);
-    color: #ffffff;
-    cursor: pointer;
-    transition: background 0.3s ease;
-}
-
-/* Button hover effect */
-.btn:hover {
-    background: linear-gradient(to right, #38ef7d, #11998e);
-}
-
-
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background: #fff;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            max-width: 400px;
+            width: 100%;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+        .form-group input {
+            width: calc(100% - 2rem);
+            padding: 0.75rem 1rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        .btn {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            background: linear-gradient(to right, #11998e, #38ef7d);
+            color: #fff;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        .btn:hover {
+            background: linear-gradient(to right, #38ef7d, #11998e);
+        }
+        .extra-links {
+            margin-top: 1rem;
+            text-align: center;
+        }
+        .extra-links a {
+            color: #11998e;
+            text-decoration: none;
+            font-weight: 500;
+            margin: 0 0.5rem;
+        }
+        .extra-links a:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
@@ -83,9 +74,13 @@ h2 {
         <h2 class="text-center">Forgot Password</h2>
         <form method="post" action="{% url 'forget_password' %}">
             {% csrf_token %}
-            <div class="form-group">
+            <!-- <div class="form-group">
                 <label for="email">Enter your email address</label>
                 <input type="email" id="email" name="email" required placeholder="Email">
+            </div> -->
+            <div class="form-group">
+                <label for="email">Enter your Email</label>
+                <input type="text" id="email" name="email" class="form-control" placeholder="Email" required>
             </div>
             <button type="submit" class="btn">Verify Email</button>
         </form>

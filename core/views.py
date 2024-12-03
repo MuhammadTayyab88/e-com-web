@@ -15,6 +15,8 @@ from django.contrib import messages
 from .models import TrackingOrder
 from django.views.decorators.http import require_POST
 from django.http import JsonResponse
+from django.core.exceptions import ValidationError
+from django.core.validators import validate_email
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
@@ -258,6 +260,7 @@ def forget_password(request):
             messages.error(request, "Email not found in the database.")
             return redirect('forget_password')
     return render(request, 'forget.html')
+
 
 def reset_password(request, email):
     if request.method == 'POST':

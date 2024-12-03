@@ -27,9 +27,4 @@ urlpatterns = [
     path('forget_password/', views.forget_password, name='forget_password'),
     path('product/<int:product_id>/', views.product_detail, name='product_detail'),
     path('category/<str:category_name>/', views.category_page, name='category_page'),
-    
-  
-
-
-
 ]
