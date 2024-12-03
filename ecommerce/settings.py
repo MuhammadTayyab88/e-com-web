@@ -18,7 +18,6 @@ STRIPE_PUBLISHABLE_KEY =config('STRIPE_PUBLISHABLE_KEY', default='')
 DEBUG = config('DEBUG', default=False)
 
 ALLOWED_HOSTS = ["3.126.55.131",'http://iqcollections.store/']
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
