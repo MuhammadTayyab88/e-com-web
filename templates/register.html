@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <title>Register</title>
-    <style>
+    <!-- <style>
         .register-form {
             width: 400px;
             margin: 0 auto;
@@ -61,11 +61,73 @@
             margin-top: 10px;
             border: 2px red;
         }
-    </style>
+    </style>  -->
+     <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background: #fff;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            max-width: 400px;
+            width: 100%;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+        .form-group input {
+            width: calc(100% - 2rem);
+            padding: 0.75rem 1rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        .btn {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            background: linear-gradient(to right, #11998e, #38ef7d);
+            color: #fff;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        .btn:hover {
+            background: linear-gradient(to right, #38ef7d, #11998e);
+        }
+        .extra-links {
+            margin-top: 1rem;
+            text-align: center;
+        }
+        .extra-links a {
+            color: #11998e;
+            text-decoration: none;
+            font-weight: 500;
+            margin: 0 0.5rem;
+        }
+        .extra-links a:hover {
+            text-decoration: underline;
+        }
+    </style> 
 </head>
 <body>
-    <div class="register-form">
-        <h2>Register</h2>
+    <div class="container">
+        <h2 class="text-center">Register</h2>
         <form method="post">
             {% csrf_token %}
             {% for field in form %}
@@ -79,7 +141,8 @@
                     {% endif %}
                 </div>
             {% endfor %}
-            <button type="submit">Register</button>
+            <button type="submit" class="btn">Register</button>
+            <h4 class="text-center">Alrady have account <a type="submit" class="btn" href="{% url 'login' %}"> Login</a></h4>
         </form>
     </div>
 </body>
