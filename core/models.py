@@ -1,119 +1,144 @@
-from django.db import models
 from django.contrib.auth.models import User
-from django.utils.timezone import now
+from django.db import models
 
-class HomePageImage(models.Model):
-    title = models.CharField(max_length=100, blank=True, null=True)
-    image = models.ImageField(upload_to='homepage_images/', blank=True, null=True)
+from ecommerce.models import BaseModel
 
-    def __str__(self):
-        return self.title if self.title else "Image"
-      
-class Product(models.Model):
-    name = models.CharField(max_length=100)
-    description = models.TextField()
-    price = models.DecimalField(max_digits=10, decimal_places=2)
-    image = models.ImageField(upload_to='products/', null=True, blank=True)
 
-    rating = models.DecimalField(max_digits=3, decimal_places=2, null=True, blank=True)
-    
-    CATEGORY_CHOICES = [
-        ('Electronics', 'Electronics'),
-        ('Fashion', 'Fashion'),
-        ('Bags', 'Bags'),
-        ('Jewellery', 'Jewellery'),
-    ]
-    
-    category = models.CharField(
-        max_length=50,
-        choices=CATEGORY_CHOICES,
-        default='Jewellery'  
+class MainCategory(BaseModel):
+    name = models.CharField(max_length=100, blank=True, null=True)
+    slogan = models.CharField(max_length=100, blank=True, null=True)
+    cover_image = models.ImageField("categories/cover/", blank=True, null=True)
+    description = models.CharField(max_length=100, blank=True, null=True)
+
+    def __str__(self) -> str:
+        return f"{self.name}"
+
+
+class SubCategory(BaseModel):
+    main_category = models.ForeignKey(
+        MainCategory, related_name="sub_category", on_delete=models.CASCADE
     )
+    name = models.CharField(max_length=100, blank=True, null=True)
+
+    def __str__(self) -> str:
+        return f"{self.main_category} --- {self.name}"
+
+
+class Product(BaseModel):
+    sub_category = models.ForeignKey(
+        SubCategory, related_name="products", on_delete=models.CASCADE
+    )
+    name = models.CharField(max_length=100, blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
+    base_price = models.DecimalField(
+        max_digits=10, decimal_places=3, blank=True, null=True
+    )
+    sale_price = models.DecimalField(
+        max_digits=10, decimal_places=3, blank=True, null=True
+    )
+    rating = models.PositiveIntegerField(default=5)
+
+    def __str__(self) -> str:
+        return f"{self.name}"
+
+
+class ProductMedia(BaseModel):
+    product = models.ForeignKey(
+        Product, related_name="product_images", on_delete=models.CASCADE
+    )
+    image = models.ImageField(upload_to="products/")
+
+    def __str__(self) -> str:
+        return f"{self.product}"
+
+
+
+class Address(BaseModel):
+    ADDRESS_TYPE_CHOICES = [
+        ('billing', 'Billing'),
+        ('shipping', 'Shipping'),
+    ]
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='addresses')
+    full_name = models.CharField(max_length=255)
+    phone_number = models.CharField(max_length=15)
+    address_line1 = models.CharField(max_length=255)
+    address_line2 = models.CharField(max_length=255, blank=True, null=True)
+    city = models.CharField(max_length=100)
+    state = models.CharField(max_length=100)
+    postal_code = models.CharField(max_length=20)
+    country = models.CharField(max_length=100)
+    address_type = models.CharField(max_length=10, choices=ADDRESS_TYPE_CHOICES, default='shipping')
+    is_default = models.BooleanField(default=False)
+
+    class Meta:
+        verbose_name = 'Address'
+        verbose_name_plural = 'Addresses'
 
     def __str__(self):
-        return self.name
+        return f"{self.full_name} - {self.address_type.capitalize()} Address"
+
+
+class Cart(BaseModel):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
     
-class TrackingOrder(models.Model):
-    STATUS_CHOICES = [
+    def __str__(self):
+        return f"{self.user}"
+
+from django.utils import timezone
+
+class Order(BaseModel):
+    ORDER_STATUS_CHOICES = [
+        ('pending', 'Pending'),
         ('processing', 'Processing'),
         ('shipped', 'Shipped'),
         ('delivered', 'Delivered'),
         ('cancelled', 'Cancelled'),
     ]
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    products = models.ManyToManyField(Product, through='TrackingOrderItem', related_name='tracking_orders')
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='processing')
-    tracking_number = models.CharField(max_length=50, blank=True, null=True)
-    tracking_url = models.URLField(blank=True, null=True)
-    order_date = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f"Tracking Order #{self.id} by {self.user.username}"
-    
-    
-class TrackingOrderItem(models.Model):
-    order = models.ForeignKey(TrackingOrder, on_delete=models.CASCADE)
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    quantity = models.PositiveIntegerField(default=1)
-
-    def __str__(self):
-        return f"{self.product.name} x {self.quantity}"
-
-class CartItem(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    quantity = models.PositiveIntegerField(default=1)
-    added_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f"{self.product.name}  x {self.quantity}"
-    
-class Checkout(models.Model):
-    PAYMENT_CHOICES = [
-        ('cod', 'Cash on Delivery'),
+    PAYMENT_STATUS_CHOICES = [
+        ('unpaid', 'Unpaid'),
+        ('paid', 'Paid'),
+        ('refunded', 'Refunded'),
+    ]
+    PAYMENT_METHOD_CHOICES = [
         ('online', 'Online Payment'),
+        ('cod', 'Cash on Delivery'),
+        ('bank_transfer', 'Bank Transfer'),
+        ('wallet', 'Wallet Payment'),
     ]
 
-    STATUS_CHOICES = [
-        ('pending', 'Pending'),
-        ('processed', 'Processed'),
-        ('shipped', 'Shipped'),
-        ('delivered', 'Delivered'),
-    ]
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='orders')
+    shipping_address = models.ForeignKey('Address', on_delete=models.SET_NULL, null=True, related_name='shipping_orders')
+    billing_address = models.ForeignKey('Address', on_delete=models.SET_NULL, null=True, related_name='billing_orders')
+    total_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    status = models.CharField(max_length=20, choices=ORDER_STATUS_CHOICES, default='pending')
+    payment_status = models.CharField(max_length=20, choices=PAYMENT_STATUS_CHOICES, default='unpaid')
+    payment_method = models.CharField(max_length=20, choices=PAYMENT_METHOD_CHOICES, default='cod')
+    transaction_id = models.CharField(max_length=100, blank=True, null=True)
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    quantity = models.PositiveIntegerField(default=1)
-    name = models.CharField(max_length=100)
-    address = models.TextField()
-    contact_number = models.CharField(max_length=20)
-    payment_method = models.CharField(max_length=20, choices=PAYMENT_CHOICES)
-    added_at = models.DateTimeField(auto_now_add=True)
-    verify_order = models.BooleanField(default=False)
-    dispatched = models.BooleanField(default=False)
-    order_date = models.DateTimeField(default=now)
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    class Meta:
+        verbose_name = 'Order'
+        verbose_name_plural = 'Orders'
+        ordering = ['-created_at']
 
     def __str__(self):
-        return (f"Order for {self.user.username} - {self.product.name}  x {self.quantity} "
-                f"on {self.order_date}")
-    
-    def confirm_order(self):
-        self.verify_order = True
+        return f"Order #{self.id} - {self.user.username} - {self.status.capitalize()}"
+
+    def mark_as_paid(self, transaction_id=None):
+        """Mark the order as paid."""
+        self.payment_status = 'paid'
+        if transaction_id:
+            self.transaction_id = transaction_id
         self.save()
 
-    def dispatch_order(self):
-        if self.verify_order:
-            self.dispatched = True
-            self.save()
-        else:
-            raise ValueError("Order must be verified before dispatching.")
+    def mark_as_shipped(self):
+        """Mark the order as shipped."""
+        self.status = 'shipped'
+        self.save()
 
-class PhoneOTP(models.Model):
-    phone_number = models.CharField(max_length=15, unique=True)
-    otp = models.CharField(max_length=6)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f"{self.phone_number} - {self.otp}"
+    def mark_as_delivered(self):
+        """Mark the order as delivered."""
+        self.status = 'delivered'
+        self.save()

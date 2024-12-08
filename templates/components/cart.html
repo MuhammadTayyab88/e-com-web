@@ -1,0 +1,257 @@
+{% extends 'base/layout.html' %}
+{% load static %}
+
+
+
+{% block title %}Cart Detail {% endblock title %}
+
+
+
+
+{% block site_content %}
+<br>
+<br>
+<br>
+<br>
+<br>
+
+<div class="card" id="cart_page">
+    <div class="row">
+        <div class="col-md-8 cart">
+            <div class="title">
+                <div class="row">
+                    <div class="col">
+                        <h4><b>Shopping Cart</b></h4>
+                    </div>
+                    <div class="col align-self-center text-right text-muted">{{cart_items_count}} items</div>
+                </div>
+            </div>
+            {% for item in cart_items %}
+            <div class="row border-top border-bottom">
+                <div class="row main align-items-center">
+                    <div class="col-2"><img class="img-fluid" src="https://i.imgur.com/pHQ3xT3.jpg"></div>
+                    <div class="col">
+                        <div class="row text-muted">{{item.product.sub_category.name}}</div>
+                        <div class="row">{{item.product.name}}</div>
+                    </div>
+                    <div class="col">
+                        <!-- <a href="#">-</a> -->
+                        <a>{{item.quantity}}</a>
+                        <!-- <a href="#">+</a> -->
+                    </div>
+                    <div class="col" style="display:flex; align-items:center;">{{item.product.sale_price}} PKR <span
+                            class="close">&#10005;</span>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            <div class="back-to-shop" style="display:flex; align-items:center;"><a href="#"></a><span
+                    class="text-muted">Back to shop</span></div>
+        </div>
+        <div class="col-md-4 summary">
+            <div>
+                <h5><b>Summary</b></h5>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col" style="padding-left:0;">ITEMS 3</div>
+                <div class="col text-right">{{total_product_price}} PKR</div>
+            </div>
+
+
+            <form>
+                <p>SHIPPING</p>
+                <select>
+                    <option class="text-muted">Standard-COD {{delivery_charges}} PKR</option>
+                </select>
+                <p>Address</p>
+                <input placeholder="Enter your phone" required name="phone_number">
+                <input placeholder="Enter your address" required name="address_line1">
+                <input placeholder="Enter your city" required name="city">
+                <input placeholder="Enter your state" required name="state">
+                <input placeholder="Enter your postal code" required name="postal_code">
+            </form>
+            <div class="row" style="border-top: 1px solid rgba(0,0,0,.1); padding: 2vh 0;">
+                <div class="col">TOTAL PRICE</div>
+                <div class="col text-right">{{total_price}} PKR</div>
+            </div>
+            <button class="btn">CHECKOUT</button>
+        </div>
+    </div>
+
+</div>
+
+
+
+<style>
+    #cart_page .title {
+        margin-bottom: 5vh;
+        padding-top: 2vh;
+
+    }
+
+    #cart_page.card {
+        margin: auto;
+        max-width: 1050px;
+        width: 90%;
+        box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+        border-radius: 1rem;
+        border: transparent;
+    }
+
+    @media(max-width:767px) {
+        #cart_page.card {
+            margin: 3vh auto;
+        }
+    }
+
+    #cart_pag.cart {
+        background-color: #fff;
+        padding: 4vh 5vh;
+        border-bottom-left-radius: 1rem;
+        border-top-left-radius: 1rem;
+    }
+
+    @media(max-width:767px) {
+        #cart_page.cart {
+            padding: 4vh;
+            border-bottom-left-radius: unset;
+            border-top-right-radius: 1rem;
+        }
+    }
+
+    #cart_page .summary {
+        background-color: #ddd;
+        border-top-right-radius: 1rem;
+        border-bottom-right-radius: 1rem;
+        padding: 4vh;
+        color: rgb(65, 65, 65);
+    }
+
+    @media(max-width:767px) {
+        #cart_page .summary {
+            border-top-right-radius: unset;
+            border-bottom-left-radius: 1rem;
+        }
+    }
+
+    #cart_page .summary .col-2 {
+        padding: 0;
+    }
+
+    #cart_page .summary .col-10 {
+        padding: 0;
+    }
+
+    #cart_page .row {
+        margin: 0;
+    }
+
+    #cart_page .title b {
+        font-size: 1.5rem;
+    }
+
+    #cart_page .main {
+        margin: 0;
+        padding: 2vh 0;
+        width: 100%;
+    }
+
+    #cart_page .col-2,
+    #cart_page .col {
+        padding: 0 1vh;
+    }
+
+    #cart_page a {
+        padding: 0 1vh;
+    }
+
+    #cart_page .close {
+        margin-left: auto;
+        font-size: 0.7rem;
+    }
+
+    #cart_page img {
+        width: 3.5rem;
+    }
+
+    #cart_page .back-to-shop {
+        margin-top: 4.5rem;
+    }
+
+    #cart_page h5 {
+        margin-top: 4vh;
+    }
+
+    hr {
+        margin-top: 1.25rem;
+    }
+
+    #cart_page form {
+        padding: 2vh 0;
+    }
+
+    #cart_page select {
+        border: 1px solid rgba(0, 0, 0, 0.137);
+        padding: 1.5vh 1vh;
+        margin-bottom: 4vh;
+        outline: none;
+        width: 100%;
+        background-color: rgb(247, 247, 247);
+    }
+
+    #cart_page input {
+        border: 1px solid rgba(0, 0, 0, 0.137);
+        padding: 1vh;
+        margin-bottom: 4px;
+        outline: none;
+        width: 100%;
+        background-color: rgb(247, 247, 247);
+    }
+
+    #cart_page input:focus::-webkit-input-placeholder {
+        color: transparent;
+    }
+
+    #cart_page .btn {
+        background-color: #000;
+        border-color: #000;
+        color: white;
+        width: 100%;
+        font-size: 0.7rem;
+        margin-top: 4vh;
+        padding: 1vh;
+        border-radius: 0;
+    }
+
+    #cart_page .btn:focus {
+        box-shadow: none;
+        outline: none;
+        box-shadow: none;
+        color: white;
+        -webkit-box-shadow: none;
+        -webkit-user-select: none;
+        transition: none;
+    }
+
+    #cart_page .btn:hover {
+        color: white;
+    }
+
+    #cart_page a {
+        color: black;
+    }
+
+    #cart_page a:hover {
+        color: black;
+        text-decoration: none;
+    }
+
+    #cart_page #code {
+        background-image: linear-gradient(to left, rgba(255, 255, 255, 0.253), rgba(255, 255, 255, 0.185)), url("https://img.icons8.com/small/16/000000/long-arrow-right.png");
+        background-repeat: no-repeat;
+        background-position-x: 95%;
+        background-position-y: center;
+    }
+</style>
+{% endblock site_content %}
