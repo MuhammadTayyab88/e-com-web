@@ -1724,6 +1724,12 @@ Products Page
 
 #products .item .thumb {
   position: relative;
+  max-height: 260px;
+  overflow: hidden;
+}
+#products .item .thumb img {
+  object-fit: cover;
+  object-position: center;
 }
 
 #products .item .thumb .hover-content ul li {

@@ -64,6 +64,7 @@
 <!-- Section -->
 <!------------------>
 {% for cat in main_category %}
+{% if cat.name and cat.description and cat.sub_category.all and cat.sub_category.all.0.products.all %}
 <section class="section" id="men">
     <div class="container">
         <div class="row">
@@ -87,8 +88,9 @@
                             <div class="thumb">
                                 <div class="hover-content">
                                     <ul>
-                                        <li><a href="single-product.html"><i class="fa fa-eye"></i></a></li>
-                                        <li><a href="single-product.html"><i class="fa fa-star"></i></a></li>
+                                        <li><a href="{% url 'product-detail' item.id %}"><i class="fa fa-eye"></i></a>
+                                        </li>
+                                        <!-- <li><a href="single-product.html"><i class="fa fa-star"></i></a></li> -->
                                         <li><a href="single-product.html"><i class="fa fa-shopping-cart"></i></a></li>
                                     </ul>
                                 </div>
@@ -124,8 +126,6 @@
         </div>
     </div>
 </section>
+{% endif %}
 {% endfor %}
-
-
-
 {% endblock site_content %}
