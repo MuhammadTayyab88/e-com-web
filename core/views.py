@@ -69,6 +69,14 @@
 #     return redirect("cart")
 
 
+
+
+
+
+
+
+
+
 # def remove_from_cart(request, item_id):
 #     cart_item = get_object_or_404(CartItem, id=item_id, user=request.user)
 #     cart_item.delete()
