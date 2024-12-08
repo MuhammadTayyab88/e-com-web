@@ -54,14 +54,15 @@
             </div>
             <hr>
             <div class="row">
-                <div class="col" style="padding-left:0;">ITEMS 3</div>
+                <div class="col" style="padding-left:0;">ITEMS {{cart_items_count}}</div>
                 <div class="col text-right">{{total_product_price}} PKR</div>
             </div>
 
 
-            <form>
+            <form method="POST" action="{% url 'place_order' %}">
+                {% csrf_token %}
                 <p>SHIPPING</p>
-                <select>
+                <select name="order_type">
                     <option class="text-muted">Standard-COD {{delivery_charges}} PKR</option>
                 </select>
                 <p>Address</p>
@@ -70,12 +71,14 @@
                 <input placeholder="Enter your city" required name="city">
                 <input placeholder="Enter your state" required name="state">
                 <input placeholder="Enter your postal code" required name="postal_code">
+                <div class="row" style="border-top: 1px solid rgba(0,0,0,.1); padding: 2vh 0;">
+                    <div class="col">TOTAL PRICE</div>
+                    <div class="col text-right">{{total_price}} PKR</div>
+                </div>
+                <button class="btn">CHECKOUT</button>
+
             </form>
-            <div class="row" style="border-top: 1px solid rgba(0,0,0,.1); padding: 2vh 0;">
-                <div class="col">TOTAL PRICE</div>
-                <div class="col text-right">{{total_price}} PKR</div>
-            </div>
-            <button class="btn">CHECKOUT</button>
+
         </div>
     </div>
 

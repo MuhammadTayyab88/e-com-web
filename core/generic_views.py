@@ -29,7 +29,6 @@ from twilio.rest import Client
 from django.db.models import Sum, F
 from django.shortcuts import render
 from .models import Cart
-from .forms import *
 from .models import *
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
@@ -202,11 +201,11 @@ def activate(request, uidb64, token):
         return render(request,'authentication/activation_failed.html')
 
 
-
+@login_required(login_url='/auth/login/')
 def landing_page_view(request):
     return render(request, "components/landing-page.html")
 
-
+@login_required(login_url='/auth/login/')
 def products_view(request, category):
     categories = SubCategory.objects.filter(main_category__name=category)
     products = Product.objects.filter(
@@ -224,7 +223,7 @@ def products_view(request, category):
     }
     return render(request, "components/products.html", context)
 
-
+@login_required(login_url='/auth/login/')
 def filter_products_view(request, category, sub):
     categories = SubCategory.objects.filter(main_category__name=category)
     products = Product.objects.filter(sub_category__name=sub).order_by("-created_at")
@@ -241,13 +240,13 @@ def filter_products_view(request, category, sub):
     }
     return render(request, "components/products.html", context)
 
-
+@login_required(login_url='/auth/login/')
 def product_detail_view(request, pk):
     product = Product.objects.get(id=pk)
     context = {"product": product}
     return render(request, "components/single-product.html", context)
 
-
+@login_required(login_url='/auth/login/')
 def add_cart_view(request, pk, quantity):
     product = Product.objects.get(id=pk)
     # price = product.sale_price
@@ -258,13 +257,16 @@ def add_cart_view(request, pk, quantity):
     )[0]
     cart.quantity =  quantity
     cart.save()
+    messages.success(request, "Product added to cart")
     return redirect('user_cart')
 
 
-
-
+@login_required(login_url='/auth/login/')
 def cart_view(request):
     cart_items = Cart.objects.filter(user=request.user)
+    if not cart_items:
+        messages.error(request, "Cart is empty, Add products to cart to view")
+        return redirect("home")
     delivery_charges = 200
     total_product_price = cart_items.aggregate(
         total=Sum(F('quantity') * F('product__sale_price'))
@@ -279,3 +281,41 @@ def cart_view(request):
     }
     return render(request, "components/cart.html", context)
     
+
+
+
+def order_view(request):
+    if request.method =="POST":
+        phone_number = request.POST.get("phone_number")
+        address_line1 = request.POST.get("address_line1")
+        city = request.POST.get("city")
+        state = request.POST.get("state")
+        postal_code = request.POST.get("postal_code")
+        address = Address.objects.create(
+            user  =  request.user,
+            phone_number = phone_number,
+            address_line1 = address_line1,
+            city = city,
+            state = state,
+            postal_code = postal_code,
+            address_type = "shipping",
+        )
+        cart_items = Cart.objects.filter(user=request.user)
+        total_product_price = cart_items.aggregate(
+            total=Sum(F('quantity') * F('product__sale_price'))
+        )['total'] or 0 
+        import uuid
+        Order.objects.create(
+            user = request.user,
+            shipping_address = address,
+            billing_address = address,
+            total_amount = total_product_price + 200,
+            transaction_id=str(uuid.uuid4().int)[:5]
+        )
+        cart_items.delete()
+        messages.success(request, "Order placed successfully")
+        return redirect("user_cart")
+    return redirect("user_cart")
+    
+        
+        
