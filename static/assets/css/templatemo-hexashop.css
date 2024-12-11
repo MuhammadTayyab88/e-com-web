@@ -319,6 +319,7 @@ header
 }
 
 .header-area .main-nav .logo {
+  display: block;
   line-height: 100px;
   color: #fff;
   font-size: 28px;
@@ -332,7 +333,7 @@ header
   transition: all 0.3s ease 0s;
 }
 
-.background-header .main-nav .logo {
+.background-header .main-nav . {
   line-height: 75px;
 }
 
@@ -628,6 +629,7 @@ header
     padding: 0px;
   }
   .header-area .logo {
+
     margin-left: 30px;
   }
   .header-area .menu-trigger {
@@ -1607,7 +1609,7 @@ footer .under-footer ul li {
 }
 
 footer .under-footer ul li a {
-  font-size: 22px;
+  font-size: 42px;
 }
 
 footer .under-footer p {
@@ -1989,7 +1991,7 @@ About Us Page
 }
 
 .about-us {
-  margin-top: 80px;
+  margin-top: 100px;
 }
 
 .about-us .left-image img {
@@ -2052,6 +2054,7 @@ About Us Page
 }
 
 .about-us .right-content ul li a {
+  font-size: 45px;
   width: 44px;
   height: 44px;
   background-color: #2a2a2a;
@@ -2205,7 +2208,7 @@ contact Us Page
 */
 
 .contact-us {
-  margin-top: 90px;
+  margin-top: 100px;
   border-bottom: 3px dotted #eee;
   padding-bottom: 90px;
 }

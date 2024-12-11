@@ -6,12 +6,15 @@
             <div class="col-12">
                 <nav class="main-nav">
                     <!-- ***** Logo Start ***** -->
-                    <a href="index.html" class="logo">
+                    <a href="{% url 'home' %}" class="logo">
                         <img src="{% static 'assets/images/logo.png' %}">
                     </a>
+                    
                     <!-- ***** Logo End ***** -->
                     <!-- ***** Menu Start ***** -->
                     <ul class="nav">
+                        <li class="scroll-to-section"><a href="{% url 'about' %}">About Us</a></li>
+                        <li class="scroll-to-section"><a href="{% url 'contact' %}">Contact Us</a></li>
                         <li class="scroll-to-section"><a href="/">Home</a></li>
                         {% for cat in main_category %}
                         <li class="submenu">
@@ -34,3 +37,4 @@
         </div>
     </div>
 </header>
+{% include 'base/scripts.html' %}

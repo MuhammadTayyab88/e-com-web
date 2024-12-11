@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+{% load static %}
+{% include 'base/navigation-bar.html' %}
+
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link href="https://fonts.googleapis.com/css?family=Poppins:100,200,300,400,500,600,700,800,900&display=swap"
+        rel="stylesheet">
+
+    <title>{% block title %}{% endblock title %} | IQ-Collections.Store</title>
+
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/bootstrap.min.css' %}">
+
+    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/font-awesome.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/templatemo-hexashop.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/owl-carousel.css' %}">
+
+    <link rel="stylesheet" href="{% static 'assets/css/lightbox.css' %}">
+</head>
+
+<body>
+
+
+   <!-- ***** About Area Starts ***** -->
+    <div class="about-us">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="left-image">
+                        <img src="{% static 'assets/images/about-left-image.jpg'%}" alt="">
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="right-content">
+                        <h4>About Us &amp; Our Skills</h4>
+                        <span>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod kon tempor incididunt ut labore.</span>
+                        <div class="quote">
+                            <i class="fa fa-quote-left"></i><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiuski smod kon tempor incididunt ut labore.</p>
+                        </div>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod kon tempor incididunt ut labore et dolore magna aliqua ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip.</p>
+                        <ul>
+                            <li><a href="https://web.facebook.com/marketplace/item/1693007384815853/?mibextid=6ojiHh&_rdc=1&_rdr#"><i class="fa fa-facebook"></i></a></li>
+                            <li><a href="https://www.instagram.com/iq_collections.store/profilecard/?igsh=MTYxamxhbmtuZnBkNw%3D%3D"><i class="fa fa-instagram"></i></a></li>
+                            <li><a href="https://wa.me/+923404347000"><i class="fa fa-whatsapp"></i></a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- ***** About Area Ends ***** -->
+
+    {% include 'base/scripts.html' %}
+    {% include 'base/footer.html' %}
+
+</body>
+
+</html>

@@ -29,7 +29,6 @@ from twilio.rest import Client
 from django.db.models import Sum, F
 from django.shortcuts import render
 from .models import Cart
-from .forms import *
 from .models import *
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
@@ -278,4 +277,34 @@ def cart_view(request):
         "total_price": total_price,
     }
     return render(request, "components/cart.html", context)
-    
+
+def about_view(request):
+    return render(request, "base/about.html")
+
+def contact_view(request):
+    if request.method == 'POST':
+        # Get the data from the form
+        name = request.POST.get('name')
+        email = request.POST.get('email')
+        message = request.POST.get('message')
+        if name and email and message:
+            try:
+                send_mail(
+                    f"Message from {name}",
+                    message,
+                    email,
+                    ['iqcollectionsstore@gmail.com'],  # Add your email here
+                    fail_silently=False,
+                )
+                messages.success(request, "Your message has been sent successfully.")
+                return redirect('base/contact_success')  # Redirect to a success page
+            except Exception as e:
+                messages.error(request, "There was an error sending your message. Please try again later.")
+                return redirect('contact')
+        else:
+            messages.error(request, "Please fill in all fields.")
+            return redirect('contact')
+    return render(request, 'base/contact.html')
+
+def contact_success(request):
+    return render(request, 'base/contact_success.html')
