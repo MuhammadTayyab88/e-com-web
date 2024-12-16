@@ -1,57 +1,39 @@
-name: Deploy to EC2
+name: Deploy to EC2 on Push to Main
 
 on:
   push:
     branches:
       - main
-  workflow_dispatch:
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout the repository
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Set up SSH Agent and add private key
       - name: Set up SSH
         uses: webfactory/ssh-agent@v0.5.3
         with:
           ssh-private-key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
 
-      # Add the EC2 instance to known_hosts to prevent SSH warnings
       - name: Add EC2 to known_hosts
-        run: ssh-keyscan -H ${{ secrets.EC2_IP }} >> ~/.ssh/known_hosts
+        run: |
+          ssh-keyscan -H ${{ secrets.EC2_IP }} >> ~/.ssh/known_hosts
 
-      # Sync project files using rsync
-      - name: Sync project files to EC2
+      - name: Copy project files to EC2
         run: |
           rsync -avz --exclude '.git*' ./ ubuntu@${{ secrets.EC2_IP }}:/home/ubuntu/ecommerce/
 
-      # SSH into EC2 and perform deployment tasks
-      - name: Deploy on EC2
+      - name: SSH into EC2 and restart Gunicorn
         run: |
           ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_IP }} << 'EOF'
-            set -e  # Exit on any error
             cd /home/ubuntu/ecommerce
-
-            # Pull latest changes (optional if rsync isn't used for code deployment)
             git pull origin main
-
-            # Set up virtual environment and dependencies
-            if [ ! -d "venv" ]; then
-              python3 -m venv venv
-            fi
             source venv/bin/activate
-            pip install --upgrade pip
             pip install -r requirements.txt
-
-            # Run Django management commands
             python manage.py collectstatic --noinput
             python manage.py migrate
-
-            # Restart the Gunicorn service
             sudo systemctl restart gunicorn
           EOF
