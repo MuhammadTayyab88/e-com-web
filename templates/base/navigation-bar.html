@@ -12,8 +12,8 @@
                     <!-- ***** Logo End ***** -->
                     <!-- ***** Menu Start ***** -->
                     <ul class="nav">
-                        <li class="scroll-to-section"><a href="/">Home</a></li>
-                        {% for cat in main_category %}
+<!--                         <li class="scroll-to-section"><a href="/">Home</a></li>
+                        {% for cat in main_category %} -->
                         <li class="submenu">
                             <a href="{% url 'products' cat.name  %}">{{cat.name}}</a>
                             <ul>
